@@ -28,7 +28,7 @@ const recommendationCollection = database.collection("recommendations");
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     app.post('/queries', async(req, res)=>{
       const query = req.body
@@ -65,9 +65,16 @@ async function run() {
       const result  = await recommendationCollection.find({queryId}).toArray()
       res.send(result)
      })
-    app.put('/queryDetails/:id', async(req , res)=>{
+     app.get('/recommendations/myRecommendations/:email', async(req, res)=>{
+      const email = req.params.email
+      const filter = {recommenderEmail : email}
+      const result = await recommendationCollection.find(filter).toArray()
+      res.send(result)
+     })
+    app.put('/queryDetails/increase/:id', async(req , res)=>{
       const id = req.params.id
       const query = req.body
+      console.log(query)
       const filter = {_id : new ObjectId(id)}
       const updateQuery = {
         $set : {
@@ -77,9 +84,28 @@ async function run() {
       const result = await queryCollection.updateOne(filter, updateQuery)
       res.send(result)
     })
+    app.put('/queryDetails/decrease/:id', async(req , res)=>{
+      const id = req.params.id
+      const query = req.body
+      console.log(query)
+      const filter = {_id : new ObjectId(id)}
+      const updateQuery = {
+        $set : {
+          recommendationCount : parseInt(query.recommendationCount)-1
+        }
+      }
+      const result = await queryCollection.updateOne(filter, updateQuery)
+      res.send(result)
+    })
+    app.delete('/recommendations/:id', async(req, res)=>{
+      const id = req.params.id
+      const query = { _id : new ObjectId(id)}
+      const result = await recommendationCollection.deleteOne(query)
+      res.send(result)
+    })
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
