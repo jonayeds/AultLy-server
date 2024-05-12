@@ -1,11 +1,13 @@
 const express = require("express")
 const  cors = require("cors")
+const jwt = require('jsonwebtoken')
 const app = express()
 const port = process.env.PORT || 5000
 require('dotenv').config()
 
 app.use(cors({
-    origin: '*'
+    origin: ['http://localhost:5173'],
+    credentials:true
 }))
 app.use(express.json())
 
@@ -29,7 +31,23 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
+    // auth
+    // app.post('/jwt', async(req, res)=>{
+    //   const user = req.body
+    //   console.log('user for token ', user)
+      
+    //   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET , {expiresIn: '1h'})
+    //   res.cookie('token', token, {
+    //     httpOnly: true,
+    //     secure: true,
+    //     sameSite: 'none'
+    //   })
+    //   .send({success: true})
+    // })
 
+
+
+    // services
     app.post('/queries', async(req, res)=>{
       const query = req.body
       const result = await queryCollection.insertOne(query)
