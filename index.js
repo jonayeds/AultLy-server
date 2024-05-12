@@ -71,6 +71,12 @@ async function run() {
       const result = await recommendationCollection.find(filter).toArray()
       res.send(result)
      })
+     app.get('/recommendations/recommendationsForMe/:email', async(req, res)=>{
+      const email = req.params.email
+      const filter = {email : email}
+      const result = await recommendationCollection.find(filter).toArray()
+      res.send(result)
+     })
     app.put('/queryDetails/increase/:id', async(req , res)=>{
       const id = req.params.id
       const query = req.body
@@ -97,10 +103,32 @@ async function run() {
       const result = await queryCollection.updateOne(filter, updateQuery)
       res.send(result)
     })
+    app.put('/queries/update/:id', async(req, res)=>{
+      const id = req.params.id
+      const query = req.body
+      const filter = { _id : new ObjectId(id)}
+      const updateQuery = {
+        $set:{
+          name: query.name,
+          details : query.details,
+          brand: query.brand,
+          title: query.title,
+          image: query.image
+        }
+      }
+      const result = await queryCollection.updateOne(filter, updateQuery)
+      res.send(result)
+    })
     app.delete('/recommendations/:id', async(req, res)=>{
       const id = req.params.id
       const query = { _id : new ObjectId(id)}
       const result = await recommendationCollection.deleteOne(query)
+      res.send(result)
+    })
+    app.delete('/queries/:id', async (req, res)=>{
+      const id = req.params.id
+      const query = {_id : new ObjectId(id)}
+      const result = await queryCollection.deleteOne(query)
       res.send(result)
     })
 
